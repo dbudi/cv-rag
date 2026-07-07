@@ -37,15 +37,15 @@ docker-compose.yml           # Postgres + pgvector untuk dev lokal
 # 1. Jalankan Postgres + pgvector
 docker compose up -d
 
-# 2. Enable extension (sekali saja)
-docker compose exec db psql -U postgres -d cv_rag_poc -f /dev/stdin < scripts/init_db.sql
+# 2. Enable extension pgvector (sekali saja; lewati jika DB baru — auto dari init script)
+docker compose exec db psql -U postgres -d cv_rag_poc -c "CREATE EXTENSION IF NOT EXISTS vector;"
 
 # 3. Install dependencies
 poetry install
 
 # 4. Copy & isi environment variables
-cp .env.example .env
-# isi ANTHROPIC_API_KEY / OPENAI_API_KEY sesuai LLM_MODEL & EMBEDDING_MODEL yang dipilih
+cp .env.example .env   # PowerShell: Copy-Item .env.example .env
+# isi LITELLM_BASE_URL / LITELLM_API_KEY sesuai proxy LiteLLM Anda
 
 # 5. Buat tabel (POC: pakai create_all langsung, belum perlu Alembic migration)
 poetry run python -c "
