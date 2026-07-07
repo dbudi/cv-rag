@@ -47,24 +47,23 @@ poetry install
 cp .env.example .env   # PowerShell: Copy-Item .env.example .env
 # isi LITELLM_BASE_URL / LITELLM_API_KEY sesuai proxy LiteLLM Anda
 
-# 5. Buat tabel (POC: pakai create_all langsung, belum perlu Alembic migration)
-poetry run python -c "
-import asyncio
-from app.db.session import engine
-from app.db.models import Base
-
-async def main():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
-asyncio.run(main())
-"
-
-# 6. Jalankan server
+# 5. Jalankan server (tabel dibuat otomatis via lifespan startup app/main.py)
 poetry run uvicorn app.main:app --reload
 ```
 
 Dokumentasi API interaktif tersedia di `http://localhost:8000/docs`.
+
+## Endpoint API
+
+| Method   | Path                                | Keterangan                                                                 |
+|----------|-------------------------------------|----------------------------------------------------------------------------|
+| `GET`    | `/health`                           | Health check, return `{"status": "ok"}`                                    |
+| `POST`   | `/api/v1/documents`                 | Upload CV (PDF/DOCX/MD), proses ingestion async di background              |
+| `GET`    | `/api/v1/documents`                 | List semua dokumen (filter status, pagination `limit`/`offset`)            |
+| `GET`    | `/api/v1/documents/{document_id}`   | Detail satu dokumen (status, chunk count, extraction method, error)        |
+| `DELETE` | `/api/v1/documents/{document_id}`   | Hapus dokumen beserta chunk-nya (cascade)                                  |
+| `POST`   | `/api/v1/documents/{document_id}/summary` | Generate ringkasan terstruktur CV (bahasa bisa dipilih di body)     |
+| `POST`   | `/api/v1/query`                     | Q&A atas satu/beberapa CV (retrieval + generation + groundedness)          |
 
 ## Yang Masih Perlu Dikerjakan (belum termasuk di skeleton ini)
 
