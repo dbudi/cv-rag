@@ -3,6 +3,7 @@ from datetime import datetime
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import TYPE_CHECKING, Any
 
 from app.api.schemas.summary import Citation, CVSummary, SummaryResponse
 from app.db.models import Chunk
